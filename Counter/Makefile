@@ -4,3 +4,5 @@ counter: MyCounter.bsv
 	bsc -u -verilog MyCounter.bsv
 test: Testbench.bsv
 	bsc -u -verilog Testbench.bsv
+clean:
+	rm *.v *.bo sim
