@@ -20,8 +20,18 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
    Reg#(UInt#(32)) cur_row <- mkReg(32);
    Reg#(UInt#(32)) cur_col <- mkReg(32);
 
-   rule dot(cur_row * cols + cur_col < rows * cols);
-
+   rule dot(in_process == 1);
+      for (UInt#(32) i = 0; i < mids; i = i + 1) begin
+         internal[cur_row * cols + cur_col] <= internal[cur_row * cols + cur_col] + a_internal[cur_row * cols + i] * b_internal[i * cols + cur_col];
+      end
+   endrule
+   rule update_pos(in_process == 1);
+      if (cur_col < cols - 1) cur_col <= cur_col + 1;
+      else if (cur_row < rows - 1) begin
+         cur_col <= 0;
+         cur_row <= cur_row + 1;
+      end
+      else in_process <= 0;
    endrule
 
    method Vector#(TMul#(rows, cols), Int#(32)) read();
