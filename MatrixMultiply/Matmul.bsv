@@ -3,11 +3,13 @@ package Matmul;
 import Vector::*;
 
 interface Matmul#(type rows, type mids, type cols);
+
    method Vector#(TMul#(rows, cols), Int#(32)) read();
    method Action set_a(Vector#(TMul#(rows, mids), Int#(32)) a);
    method Action set_b(Vector#(TMul#(mids, cols), Int#(32)) b);
    method Bool finished_multiply();
    method Action start_multiply();
+
 endinterface
 
 module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmul#(rows, mids, cols));
@@ -19,15 +21,19 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
    Reg#(Bit#(1)) in_process <- mkReg(1);
    Reg#(UInt#(32)) cur_row <- mkReg(32);
    Reg#(UInt#(32)) cur_col <- mkReg(32);
+   Reg#(UInt#(32)) cur_mid <- mkReg(32);
 
    rule dot(in_process == 1);
-      for (UInt#(32) i = 0; i < mids; i = i + 1) begin
-         internal[cur_row * cols + cur_col] <= internal[cur_row * cols + cur_col] + a_internal[cur_row * cols + i] * b_internal[i * cols + cur_col];
-      end
+      internal[cur_row * cols + cur_col] <= internal[cur_row * cols + cur_col] + a_internal[cur_row * cols + cur_mid] * b_internal[cur_mid * cols + cur_col];
    endrule
    rule update_pos(in_process == 1);
-      if (cur_col < cols - 1) cur_col <= cur_col + 1;
+      if (cur_mid < mids - 1) cur_mid <= cur_mid + 1;
+      else if (cur_col < cols - 1) begin
+         cur_mid <= 0;
+         cur_col <= cur_col + 1;
+      end
       else if (cur_row < rows - 1) begin
+         cur_mid <= 0;
          cur_col <= 0;
          cur_row <= cur_row + 1;
       end
@@ -50,6 +56,7 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
       in_process <= 1;
       cur_row <= 0;
       cur_col <= 0;
+      cur_mid <= 0;
    endmethod
 
 endmodule
