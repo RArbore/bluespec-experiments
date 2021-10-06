@@ -19,15 +19,15 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
    Reg#(Vector#(TMul#(rows, mids), val_type)) a_internal <- mkReg(replicate(0));
    Reg#(Vector#(TMul#(mids, cols), val_type)) b_internal <- mkReg(replicate(0));
 
-   Reg#(Bit#(1)) in_process <- mkReg(1);
+   Reg#(Bit#(1)) in_progress <- mkReg(1);
    Reg#(UInt#(32)) cur_row <- mkReg(32);
    Reg#(UInt#(32)) cur_col <- mkReg(32);
    Reg#(UInt#(32)) cur_mid <- mkReg(32);
 
-   rule dot(in_process == 1);
+   rule dot(in_progress == 1);
       internal[cur_row * cols + cur_col] <= internal[cur_row * cols + cur_col] + a_internal[cur_row * cols + cur_mid] * b_internal[cur_mid * cols + cur_col];
    endrule
-   rule update_pos(in_process == 1);
+   rule update_pos(in_progress == 1);
       if (cur_mid < mids - 1) cur_mid <= cur_mid + 1;
       else if (cur_col < cols - 1) begin
          cur_mid <= 0;
@@ -38,7 +38,7 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
          cur_col <= 0;
          cur_row <= cur_row + 1;
       end
-      else in_process <= 0;
+      else in_progress <= 0;
    endrule
 
    method Vector#(TMul#(rows, cols), val_type) read();
@@ -51,10 +51,10 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
       b_internal <= b;
    endmethod
    method Bool finished_multiply();
-      return in_process == 0;
+      return in_progress == 0;
    endmethod
    method Action start_multiply();
-      in_process <= 1;
+      in_progress <= 1;
       cur_row <= 0;
       cur_col <= 0;
       cur_mid <= 0;
