@@ -5,9 +5,9 @@ import Vector::*;
 
 (* synthesize *)
 module mkTest();
-   Matmul#(3, 3, 3, Int#(32)) matmul <- mkMatmul(3, 3, 3);
-   Reg#(Vector#(9, Int#(32))) a <- mkReg(replicate(0));
-   Reg#(Vector#(9, Int#(32))) b <- mkReg(replicate(0));
+   Matmul#(3, 3, 3, Float) matmul <- mkMatmul(3, 3, 3);
+   Reg#(Vector#(9, Float)) a <- mkReg(replicate(0));
+   Reg#(Vector#(9, Float)) b <- mkReg(replicate(0));
 
    function check(pred, exp, index);
       action
@@ -20,7 +20,7 @@ module mkTest();
                       a[2] <= 7;
                       a[3] <= 2;
                       a[4] <= 4;
-                      a[5] <= 1;
+                      a[5] <= 1.5;
                       a[6] <= -1;
                       a[7] <= -4;
                       a[8] <= -9;
@@ -40,9 +40,9 @@ module mkTest();
                       check(matmul.read()[0], -74, 1);
                       check(matmul.read()[1], 47, 2);
                       check(matmul.read()[2], 15, 3);
-                      check(matmul.read()[3], -32, 4);
-                      check(matmul.read()[4], 10, 5);
-                      check(matmul.read()[5], -3, 6);
+                      check(matmul.read()[3], -34, 4);
+                      check(matmul.read()[4], 12, 5);
+                      check(matmul.read()[5], -0.5, 6);
                       check(matmul.read()[6], 54, 7);
                       check(matmul.read()[7], -49, 8);
                       check(matmul.read()[8], -33, 9);
