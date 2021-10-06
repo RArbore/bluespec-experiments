@@ -2,21 +2,22 @@ package Matmul;
 
 import Vector::*;
 
-interface Matmul#(type rows, type mids, type cols);
+interface Matmul#(type rows, type mids, type cols, type val_type);
 
-   method Vector#(TMul#(rows, cols), Int#(32)) read();
-   method Action set_a(Vector#(TMul#(rows, mids), Int#(32)) a);
-   method Action set_b(Vector#(TMul#(mids, cols), Int#(32)) b);
+   method Vector#(TMul#(rows, cols), val_type) read();
+   method Action set_a(Vector#(TMul#(rows, mids), val_type) a);
+   method Action set_b(Vector#(TMul#(mids, cols), val_type) b);
    method Bool finished_multiply();
    method Action start_multiply();
 
 endinterface
 
-module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmul#(rows, mids, cols));
+module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmul#(rows, mids, cols, val_type))
+   provisos(Arith#(val_type), Bits#(val_type, val_type_sz));
 
-   Reg#(Vector#(TMul#(rows, cols), Int#(32))) internal <- mkReg(replicate(0));
-   Reg#(Vector#(TMul#(rows, mids), Int#(32))) a_internal <- mkReg(replicate(0));
-   Reg#(Vector#(TMul#(mids, cols), Int#(32))) b_internal <- mkReg(replicate(0));
+   Reg#(Vector#(TMul#(rows, cols), val_type)) internal <- mkReg(replicate(0));
+   Reg#(Vector#(TMul#(rows, mids), val_type)) a_internal <- mkReg(replicate(0));
+   Reg#(Vector#(TMul#(mids, cols), val_type)) b_internal <- mkReg(replicate(0));
 
    Reg#(Bit#(1)) in_process <- mkReg(1);
    Reg#(UInt#(32)) cur_row <- mkReg(32);
@@ -40,13 +41,13 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
       else in_process <= 0;
    endrule
 
-   method Vector#(TMul#(rows, cols), Int#(32)) read();
+   method Vector#(TMul#(rows, cols), val_type) read();
       return internal;
    endmethod
-   method Action set_a(Vector#(TMul#(rows, mids), Int#(32)) a);
+   method Action set_a(Vector#(TMul#(rows, mids), val_type) a);
       a_internal <= a;
    endmethod
-   method Action set_b(Vector#(TMul#(mids, cols), Int#(32)) b);
+   method Action set_b(Vector#(TMul#(mids, cols), val_type) b);
       b_internal <= b;
    endmethod
    method Bool finished_multiply();

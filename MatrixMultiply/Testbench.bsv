@@ -4,9 +4,9 @@ import Vector::*;
 
 (* synthesize *)
 module mkTest();
-   Matmul#(3, 3, 3) matmul <- mkMatmul(3, 3, 3);
-   Vector#(9, Int#(32)) a = replicate(2);
-   Vector#(9, Int#(32)) b = replicate(1);
+   Matmul#(3, 3, 3, UInt#(32)) matmul <- mkMatmul(3, 3, 3);
+   Vector#(9, UInt#(32)) a = replicate(2);
+   Vector#(9, UInt#(32)) b = replicate(1);
 
    function check(pred, exp);
       action
