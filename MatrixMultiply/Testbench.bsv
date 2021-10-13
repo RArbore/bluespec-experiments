@@ -2,14 +2,16 @@ import FloatingPoint::*;
 import RegFile::*;
 import StmtFSM::*;
 import Matmul::*;
+import Matadd::*;
 import Vector::*;
 
 (* synthesize *)
 module mkTest();
    RegFile#(Bit#(5), Bit#(32)) regFile <- mkRegFileLoad("data.hex", 0, 26);
-   Matmul#(3, 3, 3, Float) matmul <- mkMatmul(3, 3, 3);
-   Reg#(Vector#(9, Float)) a <- mkReg(replicate(0));
-   Reg#(Vector#(9, Float)) b <- mkReg(replicate(0));
+   Matmul#(3, 3, 3, Int#(32)) matmul <- mkMatmul(3, 3, 3);
+   //Matadd#(3, 3, 3, Int#(32)) matadd <- mkMatadd(3, 3, 3);
+   Reg#(Vector#(9, Int#(32))) a <- mkReg(replicate(0));
+   Reg#(Vector#(9, Int#(32))) b <- mkReg(replicate(0));
 
    function check(pred, exp, index);
       action
