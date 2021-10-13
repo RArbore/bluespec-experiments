@@ -8,8 +8,8 @@ interface Matmul#(type rows, type mids, type cols, type val_type);
    method Action set_a(Vector#(TMul#(rows, mids), val_type) a);
    method Action set_b(Vector#(TMul#(mids, cols), val_type) b);
    method Action reset();
-   method Bool finished_multiply();
-   method Action start_multiply();
+   method Bool finished();
+   method Action start();
 
 endinterface
 
@@ -54,10 +54,10 @@ module mkMatmul#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matmu
    method Action reset();
       internal <= replicate(0);
    endmethod
-   method Bool finished_multiply();
+   method Bool finished();
       return in_progress == 0;
    endmethod
-   method Action start_multiply();
+   method Action start();
       in_progress <= 1;
       cur_row <= 0;
       cur_col <= 0;

@@ -8,8 +8,8 @@ interface Matadd#(type rows, type mids, type cols, type val_type);
    method Action set_a(Vector#(TMul#(rows, mids), val_type) a);
    method Action set_b(Vector#(TMul#(mids, cols), val_type) b);
    method Action reset();
-   method Bool finished_multiply();
-   method Action start_multiply();
+   method Bool finished();
+   method Action start();
 
 endinterface
 
@@ -25,7 +25,7 @@ module mkMatadd#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matad
    Reg#(UInt#(32)) cur_col <- mkReg(32);
 
    rule dot(in_progress == 1);
-       internal[cur_row * cols + cur_col] <= a_internal[cur_row * cols + cur_col] * b_internal[cur_row * cols + cur_col];
+       internal[cur_row * cols + cur_col] <= a_internal[cur_row * cols + cur_col] + b_internal[cur_row * cols + cur_col];
    endrule
    rule update_pos(in_progress == 1);
       if (cur_col < cols - 1) begin
@@ -50,10 +50,10 @@ module mkMatadd#(parameter UInt#(32) rows, UInt#(32) mids, UInt#(32) cols)(Matad
    method Action reset();
       internal <= replicate(0);
    endmethod
-   method Bool finished_multiply();
+   method Bool finished();
       return in_progress == 0;
    endmethod
-   method Action start_multiply();
+   method Action start();
       in_progress <= 1;
       cur_row <= 0;
       cur_col <= 0;
